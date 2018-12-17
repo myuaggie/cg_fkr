@@ -28,7 +28,7 @@ public:
     void chaseTarget(float x, float z, float angle);
     void backChaseTarget(float x, float z, float angle);
     void reverseChaseTarget(float target_x, float target_y, float target_z, float x, float y, float z);
-
+    void chaseTargetWithBias(float target_x, float target_y, float target_z, float x, float y, float z, float bias);
     float camera_close = 120;
     float camera_far = 400;
 private:

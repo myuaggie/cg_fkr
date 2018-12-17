@@ -176,3 +176,28 @@ void Camera::reverseChaseTarget(float target_x, float target_y, float target_z, 
 
     setModelViewMatrix();
 }
+
+void Camera::chaseTargetWithBias(float target_x, float target_y, float target_z, float x, float y, float z,
+                                 float bias) {
+    Vector3d tmp = Vector3d(target_x - x, target_y - y, target_z - z);
+    tmp.normalize();
+
+  //  float dxz = sqrt((tmp.x())*(tmp.x())+(tmp.y())*(tmp.y())+(tmp.z())*(tmp.z()));
+    m_pos(0) = x - tmp.x()*camera_close*sqrt(2)*cos(bias*c);
+    m_pos(1) = y - tmp.y()*camera_close;
+    m_pos(2) = z - tmp.z()*camera_close*sqrt(2)*sin(bias*c);
+
+    m_target(0) = target_x;
+    m_target(1) = target_y;
+    m_target(2) = target_z;
+
+    n = Vector3d(m_pos.x()-m_target.x(), m_pos.y()-m_target.y(), m_pos.z()-m_target.z());
+    u = Vector3d(m_up.cross(n).x(), m_up.cross(n).y(), m_up.cross(n).z());
+    v = Vector3d(n.cross(u).x(),n.cross(u).y(),n.cross(u).z());
+
+    n.normalize();
+    u.normalize();
+    v.normalize();
+
+    setModelViewMatrix();
+}

@@ -46,10 +46,10 @@ bool AntiMotion::move(float targetX, float targetY, float targetZ, float protect
     if (flag) return true;
     float dTarget = sqrt((x - targetX)*(x - targetX)+(z - targetZ)*(z - targetZ)+(y - targetY)*(y - targetY));
     float dProtect = sqrt((x - protectX)*(x - protectX)+(z - protectZ)*(z - protectZ)+(y - protectY)*(y - protectY));
-    if (offsetX == 0 && offsetY == 0 && offsetZ == 0){
-        if (dProtect > 60) chase(protectX, protectY, protectZ, 0, 0, 0, false);
-        else if (dTarget < 60) flag=chase(targetX, targetY, targetZ, offsetX, offsetY, offsetZ, true);
-    }
+   // if (offsetX == 0 && offsetY == 0 && offsetZ == 0){
+        if (dTarget < 60) flag=chase(targetX, targetY, targetZ, offsetX, offsetY, offsetZ, true);
+        else if (dProtect > 60) chase(protectX, protectY, protectZ, 0, 0, 0, false);
+  //  }
 //    if (dTarget > 60){
 //        float dProtect = sqrt((x - protectX)*(x - protectX)+(z - protectZ)*(z - protectZ)+(y - protectY)*(y - protectY));
 //        if (dProtect <= 2*protectV){
@@ -62,15 +62,15 @@ bool AntiMotion::move(float targetX, float targetY, float targetZ, float protect
 //        chase(protectX, protectY, protectZ, 0, 0, 0, false);      //chase owner
 //    }
 //    else {
-    else  flag=chase(targetX, targetY, targetZ, offsetX, offsetY, offsetZ, true);        //chase FKR
+  //  else  flag=chase(targetX, targetY, targetZ, offsetX, offsetY, offsetZ, true);        //chase FKR
     //}
     y += vY;
     x += vX;
     z += vZ;
-    if (x <= -400){x = -399;}
-    else if (x >= 400) {x = 399;}
-    if (z <= -400) {z = -399;}
-    else if (z >= 400) {z = 399;}
+    if (x <= -380/sqrt(2)){x = -379/sqrt(2);}
+    else if (x >= 380/sqrt(2)) {x = 379/sqrt(2);}
+    if (z <= -380/sqrt(2)) {z = -379/sqrt(2);}
+    else if (z >= 380/sqrt(2)) {z = 379/sqrt(2);}
     if (y <= -100){y = -99;}
     else if (y >= 100) {y = 99;}
     wingAngle += wWing;

@@ -214,10 +214,10 @@ void Motion::move() {
     y += vY;
     x += vX;
     z += vZ;
-    if (x <= -400){x = -399;}
-    else if (x >= 400) {x = 399;}
-    if (z <= -400) {z = -399;}
-    else if (z >= 400) {z = 399;}
+    if (x <= -380/sqrt(2)){x = -379/sqrt(2);}
+    else if (x >= 380/sqrt(2)) {x = 379/sqrt(2);}
+    if (z <= -380/sqrt(2)) {z = -379/sqrt(2);}
+    else if (z >= 380/sqrt(2)) {z = 379/sqrt(2);}
     if (y <= -100){y = -99;}
     else if (y >= 100) {y = 99;}
     wingAngle += wWing;
@@ -392,10 +392,10 @@ void Motion::chase(float targetX, float targetY, float targetZ) {
 }
 
 void Motion::dodge(float targetX, float targetY, float targetZ) {
-    if (y <= targetY){
+    if (rand()%2 == 1){
         down();
     }
-    else if (y > targetY){
+    else {
         up();
     }
     float tan;
@@ -450,7 +450,8 @@ void Motion::dodge(float targetX, float targetY, float targetZ) {
     }
 }
 
-bool Motion::forward(float targetX, float targetY, float targetZ, float dodgeX, float dodgeY, float dodgeZ){
+bool Motion::forward(float targetX, float targetY, float targetZ, float dodgeX, float dodgeY, float dodgeZ,
+        vector<Vector3d> dodges){
 //    float d = sqrt(pow(x-dodgeX, 2) + pow(y-dodgeY, 2) + pow(z-dodgeZ, 2));
 //    float v = sqrt(pow(vX, 2) + pow(vY, 2) + pow(vZ, 2));
 //    if (d < v){
@@ -499,6 +500,15 @@ bool Motion::forward(float targetX, float targetY, float targetZ, float dodgeX, 
         state = 0;
         return true;
     }
+
+    for (int i =0; i< dodges.size();i++){
+        Vector3d tmp_v = dodges[i];
+        float tmp_d = sqrt((x-tmp_v.x())*(x-tmp_v.x())+(y-tmp_v.y())*(y-tmp_v.y())+(z-tmp_v.z())*(z-tmp_v.z()));
+        if (tmp_d <= 80) {
+            dodge(tmp_v.x(),tmp_v.y(),tmp_v.z());
+            return false;
+        }
+    }
     if (y < targetY){
         up();
     }
@@ -527,16 +537,11 @@ bool Motion::forward(float targetX, float targetY, float targetZ, float dodgeX, 
         }
         float k1=(y0*x0+y1*x1-y0*x1-y1*x0+sqrt(r0*r0*(-2*y0*y1-2*x0*x1+y1*y1+y0*y0+x0*x0-r0*r0+x1*x1)))/(-r0*r0+x0*x0-2*x0*x1+x1*x1);
 
-        float k2= (y0*x0+y1*x1-y0*x1-y1*x0-sqrt(r0*r0*(-2*y0*y1-2*x0*x1+y1*y1+y0*y0+x0*x0-r0*r0+x1*x1)))/(-r0*r0+x0*x0-2*x0*x1+x1*x1);
+      //  float k2= (y0*x0+y1*x1-y0*x1-y1*x0-sqrt(r0*r0*(-2*y0*y1-2*x0*x1+y1*y1+y0*y0+x0*x0-r0*r0+x1*x1)))/(-r0*r0+x0*x0-2*x0*x1+x1*x1);
 
         float meetX1=(-k1*y1+x0+k1*k1*x1+y0*k1)/(1+k1*k1);
         float meetY1 =-(-y1-k1*x0-y0*k1*k1+k1*x1)/(1+k1*k1);
-        float meetX2=(-k2*y1+x0+k2*k2*x1+y0*k2)/(1+k2*k2);
-        float meetY2 =-(-y1-k2*x0-y0*k2*k2+k2*x1)/(1+k2*k2);
-        float d1 = sqrt(pow(x-meetX1, 2) + pow(z-meetY1, 2));
-        float d2 = sqrt(pow(x-meetX2, 2) + pow(z-meetY2, 2));
-//        if (d1 >= d2) forwardTarget(meetX2, meetY2);
-//        else forwardTarget(meetX1, meetY1);
+
      //   cout << "to meet:" << meetX2 << "," << meetY2 << endl;
         forwardTarget(meetX1, meetY1);
 
@@ -549,26 +554,6 @@ bool Motion::forward(float targetX, float targetY, float targetZ, float dodgeX, 
 }
 
 
-
-
-void Motion::forwardEdge(float targetX, float targetY, float targetZ){
-    float x0 = targetX;  float y0 = targetZ;
-    float x1 = x; float y1 = z;
-    float r0 = 2*maxVXZ;
-    float k1=(y0*x0+y1*x1-y0*x1-y1*x0+sqrt(r0*r0*(-2*y0*y1-2*x0*x1+y1*y1+y0*y0+x0*x0-r0*r0+x1*x1)))/(-r0*r0+x0*x0-2*x0*x1+x1*x1);
-
-   // float k2= (y0*x0+y1*x1-y0*x1-y1*x0-(r0^2*(-2*y0*y1-2*x0*x1+y1^2+y0^2+x0^2-r0^2+x1^2))^(1/2))/(-r0^2+x0^2-2*x0*x1+x1^2)
-
-    float meetX=(-k1*y1+x0+k1*k1*x1+y0*k1)/(1+k1*k1);
-    float meetY =-(-y1-k1*x0-y0*k1*k1+k1*x1)/(1+k1*k1);
-
-
-
-//    x_2=(-k2*y1+x0+k2^2*x1+y0*k2)/(1+k2^2)
-//
-//    y_2 =-(-y1-k2*x0-y0*k2^2+k2*x1)/(1+k2^2)
-
-}
 
 void Motion::forwardTarget(float targetX, float targetZ){
     float tan;

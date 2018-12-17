@@ -62,6 +62,11 @@ void Android::forward() {
 
     z += v * cos(angle*c);
     x += v * sin(angle*c);
+
+    if (x <= -380/sqrt(2)){x = -379/sqrt(2);}
+    else if (x >= 380/sqrt(2)) {x = 379/sqrt(2);}
+    if (z <= -380/sqrt(2)) {z = -379/sqrt(2);}
+    else if (z >= 380/sqrt(2)) {z = 379/sqrt(2);}
 }
 
 void Android::setForward(){

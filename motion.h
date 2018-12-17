@@ -7,6 +7,8 @@
 #include <GLUT/GLUT.h>
 #include <vector>
 #include <string>
+#include <Eigen/Dense>
+using namespace Eigen;
 using namespace std;
 #endif //OPENGL_MOTION_H
 
@@ -64,7 +66,8 @@ public:
     void captured();
 
     // flight path
-    bool forward(float targetX, float targetY, float targetZ, float dodgeX, float dodgeY, float dodgeZ);
+    bool forward(float targetX, float targetY, float targetZ, float dodgeX, float dodgeY, float dodgeZ,
+            vector<Vector3d> dodges);
     void dodge(float targetX, float targetY, float targetZ);
     void chase(float targetX, float targetY, float targetZ);
     void random();

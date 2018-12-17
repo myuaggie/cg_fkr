@@ -11,6 +11,8 @@
 #include "motion.h"
 #include "antimotion.h"
 #include "camera.h"
+#include "android.h"
+#include "daodan.h"
 #include <stdio.h>
 #include <GLUT/GLUT.h>
 #include <stdlib.h>
@@ -18,7 +20,6 @@
 #include <iostream>
 #include <time.h>
 #include <vector>
-#include "android.h"
 #include <thread>
 
 #include <unistd.h>
@@ -34,7 +35,7 @@ string root_path = "/FKR/";
 string root_path2 = "/anti-FKR/";
 string root_path3 = "/station/";
 string root_path4 = "/android/";
-string root_path5 = "/explode/";
+string root_path5 = "/daodan/";
 string file = "wurenjismall.obj";
 string file1 = "wurenjiyi1.obj";
 string file2 = "wurenjiyi2.obj";
@@ -48,7 +49,7 @@ string file9 = "androidrightfoot.obj";
 string file10 = "androidlefthand.obj";
 string file11 = "androidrighthand.obj";
 string file12 = "androidrhead.obj";
-string file13 = "explodeball.obj";
+string file13 = "daodan.obj";
 string floor_texture = "/scene/floor2.tga";
 string wall_texture = "/scene/wall2.tga";
 string station_texture = "/scene/station.tga";
@@ -59,15 +60,15 @@ ObjLoader objModel, objModel1, objModel2, objModel3, objModel4,  //fkr
     objModel6, //bg
     objModelAndroidBody, objModelAndroidHead, objModelAndroidLeftFoot, objModelAndroidRightFoot,
     objModelAndroidLeftHand, objModelAndroidRightHand,
-    objModelExplodeBall;
+    objModelDaoDan;
 static float c = 3.1415926 / 180.0f;
 static float r = 1.0f;
 static int oldPosY = -1;
 static int oldPosX = -1;
 
-static float dx = 250;
+static float dx = 150;
 static float dy = -98;
-static float dz = 250;
+static float dz = 150;
 Android android(dx, dy, dz);
 
 
@@ -83,6 +84,8 @@ AntiMotion anti4 = AntiMotion(dx, dy+40, dz);
 
 Motion motion = Motion();
 
+Daodan* daodan = new Daodan();
+
 Vector3d pos(50.0, -40.0, 120.0);
 Vector3d target(82.0, -40.0, -400.0);
 Vector3d up(0.0, 1.0, 0.0);
@@ -92,6 +95,7 @@ Vector3d up2(0.0, 1.0, 0.0);
 Camera* camera;
 Camera* camera2;
 Camera* camera3;
+Camera* camera4;
 
 int window_width, window_height;
 
@@ -359,10 +363,13 @@ void drawTarget(bool mode){
 
 bool drawAnti(bool mode){
     bool flag = false;
+    float tmp_d;
     glPushMatrix();
     if (mode) {
         if (motion.state == 6) {
-            drawAttackTrack(anti0.x, anti0.y, anti0.z, motion.x, motion.y, motion.z);
+            tmp_d = sqrt((anti0.x-motion.x)*(anti0.x-motion.x)+(anti0.y-motion.y)*(anti0.y-motion.y)
+                    +(anti0.z-motion.z)*(anti0.z-motion.z));
+            if (tmp_d <= 80) drawAttackTrack(anti0.x, anti0.y, anti0.z, motion.x, motion.y, motion.z);
             if (anti0.move(motion.x, motion.y, motion.z, android.x, android.y + 40, android.z, android.v, 0, 0, 0)) {
                 motion.captured();
             }
@@ -380,7 +387,9 @@ bool drawAnti(bool mode){
     glPushMatrix();
     if (mode) {
         if (motion.state == 6) {
-            drawAttackTrack(anti1.x, anti1.y, anti1.z, motion.x, motion.y, motion.z);
+            tmp_d = sqrt((anti1.x-motion.x)*(anti1.x-motion.x)+(anti1.y-motion.y)*(anti1.y-motion.y)
+                         +(anti1.z-motion.z)*(anti1.z-motion.z));
+            if (tmp_d <= 80) drawAttackTrack(anti1.x, anti1.y, anti1.z, motion.x, motion.y, motion.z);
             if (anti1.move(motion.x, motion.y, motion.z, android.x, android.y + 40, android.z, android.v, 0, 0, 20)) {
                 motion.captured();
             }
@@ -398,7 +407,9 @@ bool drawAnti(bool mode){
     glPushMatrix();
     if (mode) {
         if (motion.state == 6) {
-            drawAttackTrack(anti2.x, anti2.y, anti2.z, motion.x, motion.y, motion.z);
+            tmp_d = sqrt((anti2.x-motion.x)*(anti2.x-motion.x)+(anti2.y-motion.y)*(anti2.y-motion.y)
+                         +(anti2.z-motion.z)*(anti2.z-motion.z));
+            if (tmp_d <= 80) drawAttackTrack(anti2.x, anti2.y, anti2.z, motion.x, motion.y, motion.z);
             if (anti2.move(motion.x, motion.y, motion.z, android.x, android.y + 40, android.z, android.v, 0, 0, -20)) {
                 motion.captured();
             }
@@ -416,7 +427,9 @@ bool drawAnti(bool mode){
     glPushMatrix();
     if (mode) {
         if (motion.state == 6) {
-            drawAttackTrack(anti3.x, anti3.y, anti3.z, motion.x, motion.y, motion.z);
+            tmp_d = sqrt((anti3.x-motion.x)*(anti3.x-motion.x)+(anti3.y-motion.y)*(anti3.y-motion.y)
+                         +(anti3.z-motion.z)*(anti3.z-motion.z));
+            if (tmp_d <= 80) drawAttackTrack(anti3.x, anti3.y, anti3.z, motion.x, motion.y, motion.z);
             if (anti3.move(motion.x, motion.y, motion.z, android.x, android.y + 40, android.z, android.v, 20, 0, 0)) {
                 motion.captured();
             }
@@ -434,7 +447,9 @@ bool drawAnti(bool mode){
     glPushMatrix();
     if (mode) {
         if (motion.state == 6) {
-            drawAttackTrack(anti4.x, anti4.y, anti4.z, motion.x, motion.y, motion.z);
+            tmp_d = sqrt((anti4.x-motion.x)*(anti4.x-motion.x)+(anti4.y-motion.y)*(anti4.y-motion.y)
+                         +(anti4.z-motion.z)*(anti4.z-motion.z));
+            if (tmp_d <= 80) drawAttackTrack(anti4.x, anti4.y, anti4.z, motion.x, motion.y, motion.z);
             if (anti4.move(motion.x, motion.y, motion.z, android.x, android.y + 40, android.z, android.v, -20, 0, 0)) {
                 motion.captured();
             }
@@ -472,7 +487,11 @@ void drawFKR(bool mode){
             motion.clockwiseRotation();
         } else if (motion.state == 6) {
             drawAttackTrack(motion.x, motion.y, motion.z, android.x, android.y + 30, android.z);
-            if (motion.forward(android.x, android.y + 30, android.z, anti0.x, anti0.y, anti0.z)){
+            vector<Vector3d> vvd;
+            if (daodan->state == 0){
+                vvd.push_back(Vector3d(daodan->x, daodan->y, daodan->z));
+            }
+            if (motion.forward(android.x, android.y + 30, android.z, anti0.x, anti0.y, anti0.z, vvd)){
                 android.captured();
             }
         } else {
@@ -523,6 +542,32 @@ void drawFKR(bool mode){
     glPopMatrix();
 }
 
+void drawDaoDan(bool mode){
+    glPushMatrix();
+    if (mode) {
+        daodan->trace(motion.x, motion.y, motion.z);
+        if (daodan->state == 1 && motion.state != -2){
+            cout << daodan->state << endl;
+            motion.captured();
+        }
+    }
+    glTranslatef(daodan->x, daodan->y, daodan->z);
+    glRotated(daodan->angleY, 0, 1, 0);
+    glRotated(daodan->angleX, 1, 0, 0);
+    if (daodan->state == 0){
+        objModelDaoDan.Draw();
+    }
+    else if (daodan->state == 1){
+        daodan->bias += 1;
+        objModelDaoDan.DrawWithBias(daodan->bias);
+    }
+    else if (daodan->state == -1){
+        daodan->bias += 1;
+        objModelDaoDan.DrawWithBias(daodan->bias);
+    }
+    glPopMatrix();
+}
+
 void targetFrontView(bool mode){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -549,6 +594,7 @@ void targetBackView(bool mode){
 
     drawTarget(mode);
     drawFKR(mode);
+    drawAnti(mode);
 }
 
 void fkrFrontView(bool mode){
@@ -560,6 +606,23 @@ void fkrFrontView(bool mode){
     objModel6.Draw();   //scene
     glPopMatrix();
 
+    drawTarget(mode);
+    drawFKR(mode);
+    drawAnti(mode);
+}
+
+void daoDanFrontView(bool mode){
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    camera4->setModelViewMatrix();
+
+    glPushMatrix();
+    objModel6.Draw();   //scene
+    glPopMatrix();
+
+    if (daodan->bias < 30){
+        drawDaoDan(mode);
+    }
     drawTarget(mode);
     drawFKR(mode);
     drawAnti(mode);
@@ -588,16 +651,29 @@ void display()
     }
 
     glViewport(0, 0, window_width/3*2, window_height);
-    if (mode == 0 || mode == 2) {
-        targetFrontView(true);
+    if (daodan->bias < 5){
+        daoDanFrontView(true);
     }
     else {
-        fkrFrontView(true);
+        if (mode == 2) {
+            Vector3d v1(motion.x-android.x, motion.y-android.y+40, motion.z-android.z);
+            Vector3d v2(sin(c*android.angle), 0, cos(c*android.angle));
+            if (v1.dot(v2) >=0) targetFrontView(true);
+            else targetBackView(true);
+        }
+        else if (mode == 0){
+            targetFrontView(true);
+        }else {
+            fkrFrontView(true);
+        }
     }
 
     camera->chaseTarget(android.x, android.z, android.angle);
     camera2->backChaseTarget(android.x, android.z, android.angle);
     camera3->reverseChaseTarget(android.x, android.y-10, android.z, motion.x, motion.y+30, motion.z);
+    if (daodan->bias < 30){
+        camera4->chaseTargetWithBias(motion.x, motion.y, motion.z, daodan->x, daodan->y, daodan->z, 75);
+    }
 
     if (window_mode == 1) {
         glViewport(window_width / 3 * 2, window_height / 3 * 2, window_width / 3, window_height / 3);
@@ -796,7 +872,7 @@ void keyPressed(unsigned char key, int x, int y) {
         start = now;
         motion.down();
     }
-    if (key == 'c'){
+    if (key == 'v'){
         now = clock();
         cout << (double)(now-start)/CLOCKS_PER_SEC << ":c" << endl;
         start = now;
@@ -825,6 +901,7 @@ void keyPressed(unsigned char key, int x, int y) {
         anti2.restart(android.x, android.y+40, android.z);
         anti3.restart(android.x, android.y+40, android.z);
         anti4.restart(android.x, android.y+40, android.z);
+        daodan = new Daodan();
     }
     if (key == 'i'){
         now = clock();
@@ -868,6 +945,13 @@ void keyPressed(unsigned char key, int x, int y) {
     }
     if (key == 'c'){
         window_change = 1 - window_change;
+    }
+    if (key == 'e'){
+        if (daodan->state != 0){
+            int d = sqrt((android.x-motion.x)*(android.x-motion.x)+
+                         (android.y-motion.y)*(android.y-motion.y)+(android.z-motion.z)*(android.z-motion.z));
+            if (d > 80) daodan = new Daodan(android.x, android.y+40, android.z);
+        }
     }
 }
 
@@ -928,7 +1012,7 @@ void init() {
     objModelAndroidLeftHand.load(file10, root_path4, program);
     objModelAndroidRightHand.load(file11, root_path4, program);
     objModelAndroidHead.load(file12, root_path4, program);
-    //  objModelExplodeBall.load(file13, root_path5, program);
+    objModelDaoDan.load(file13, root_path5, program);
     TextureImage ti,ti2,ti3;
     loadTGA(&ti, (char*)(root+floor_texture).c_str(), 0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -946,6 +1030,8 @@ void init() {
     camera2 = new Camera(pos2, target2, up2);
     camera3 = new Camera(pos, target, up);
     camera3->camera_close = 60;
+    camera4 = new Camera(pos, target, up);
+    camera4->camera_close = 30;
     window_mode = 0;
     window_change = 0;
 }

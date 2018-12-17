@@ -12,7 +12,7 @@ include_directories(/usr/local/Cellar/eigen/3.3.5/include/eigen3)
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
-add_library(lib objloader.cpp motion.cpp motion.h mtlparser.cpp mtlparser.h tgaparser.h tgaparser.cpp antimotion.cpp antimotion.h android.cpp android.h camera.cpp camera.h)
+add_library(lib objloader.cpp motion.cpp motion.h mtlparser.cpp mtlparser.h tgaparser.h tgaparser.cpp antimotion.cpp antimotion.h android.cpp android.h camera.cpp camera.h daodan.cpp daodan.h)
 
 
 link_libraries(lib)
